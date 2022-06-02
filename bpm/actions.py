@@ -11,8 +11,6 @@ from .git import Git
 logger = get_logger(__name__)
 
 
-
-
 class Message:
     def __init__(self, message):
         # get type of message
@@ -29,25 +27,42 @@ class Message:
         cwd = os.getcwd()
         pkglist = PackageList()
         pkglist.load_configs()
-        if not pkglist.get(self.project["name"]):
+        logger.info("Fetching package {}".format(self.project["name"]))
+        if not self.project["name"] in pkglist:
             logger.info(f"{self.project['name']} not found in package list")
             return
         pkg: Package = pkglist.get(self.project["name"])
 
         version = self.project["version"]
         logger.info(f"Updating {self.project['name']} to {version}")
-        repo = Git(pkg.repourl, project_name=pkg.upstream_name)
-        os.chdir(os.path.join(global_config["git_dir"], self.project['name']))
-        # update the version
-        match pkg.build.method:
-            case 'rpm':
-                pkg.build.update(version)
-            case 'shell':
-                # get the command
-                cmd = pkg.build.script
-                pkg.build.update(cmd)
+        with Git(pkg.repourl, project_name=pkg.upstream_name) as repo:
+            os.chdir(os.path.join(
+                global_config["git_dir"], self.project['name']))
+            # update the version
+            match pkg.build.method:
+                case 'rpm':
+                    pkg.build.update(version)
+                case 'shell':
+                    # get the command
+                    cmd = pkg.build.script
+                    pkg.build.update(cmd)
 
-        os.chdir(cwd)
+            # if pkg.branches is empty
+            if not pkg.branches:
+                repo.commit(message=f"Update {pkg.upstream_name} to {version}")
+            else:
+                for branch in pkg.branches:
+                    repo.commit(
+                        branch, f"Update {pkg.upstream_name} to {version}")
+
+            if global_config["push_to_remote"]:
+                for branch in pkg.branches:
+                    repo.push(f"refs/heads/{branch}")
+            else:
+                logger.info("Config says not to push to remote, skipping")
+
+            os.chdir(cwd)
+
 
 if __name__ == '__main__':
     pass

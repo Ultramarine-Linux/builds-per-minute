@@ -81,7 +81,8 @@ class Package:
         self.downstream_name = data["package_name"]
         self.build = BuildSettings.load_settings(data)
         self.repourl = data["repo"]
-        logger.debug(f"{self.build=}")
+        self.branches = data.get("branches", [])
+        #logger.debug(f"{self.build=}")
 
 
 class Singleton(object):
