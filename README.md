@@ -42,5 +42,5 @@ While BPM is fundamentally and architecturally similar to the-new-hotness, it te
 
 TODO
 
-[the-new-hotness]: https://github.com/fedora-infra/the-new-hotness)
+[the-new-hotness]: https://github.com/fedora-infra/the-new-hotness
 [Chaotic-AUR]: https://aur.chaotic.cx/
