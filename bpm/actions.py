@@ -27,10 +27,12 @@ class Message:
 
     def update(self):
         cwd = os.getcwd()
-        if not PackageList().get(self.project["name"]):
+        pkglist = PackageList()
+        pkglist.load_configs()
+        if not pkglist.get(self.project["name"]):
             logger.info(f"{self.project['name']} not found in package list")
             return
-        pkg: Package = PackageList().get(self.project["name"])
+        pkg: Package = pkglist.get(self.project["name"])
 
         version = self.project["version"]
         logger.info(f"Updating {self.project['name']} to {version}")
