@@ -9,7 +9,7 @@ import functools
 
 @functools.cache
 def get_global_config():
-    return toml.load("config.toml")['bpm-config']
+    return toml.load("bpm.toml")['bpm-config']
 
 
 # Configuration module
