@@ -4,7 +4,7 @@ import os
 import subprocess
 import re
 
-from .config import PackageList, Package
+from .config import PackageList, Package, global_config
 from .log import get_logger
 from .git import Git
 
@@ -36,8 +36,8 @@ class Message:
 
         version = self.project["version"]
         logger.info(f"Updating {self.project['name']} to {version}")
-        repo = Git(pkg.repourl)
-        os.chdir(self.project['name'])
+        repo = Git(pkg.repourl, project_name=pkg.upstream_name)
+        os.chdir(os.path.join(global_config["git_dir"], self.project['name']))
         # update the version
         match pkg.build.method:
             case 'rpm':
