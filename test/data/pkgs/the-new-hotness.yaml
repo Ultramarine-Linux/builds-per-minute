@@ -1,0 +1,7 @@
+upstream_name: the-new-hotness
+package_name: the-new-hotness
+build:
+  method: rpm
+  specfile: discord-canary.spec
+repo: https://github.com/Ultramarine-Linux/pkg-umpkg
+branches: [main]

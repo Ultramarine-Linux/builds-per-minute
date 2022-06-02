@@ -1,0 +1,10 @@
+pyyaml
+toml
+fedora_messaging
+pygit2
+pygithub
+aiofiles
+aiohttp
+tox
+pytest
+pytest-asyncio

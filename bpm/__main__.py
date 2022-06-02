@@ -12,8 +12,8 @@ testdata = {"project": {"id": 251545, "name": "example-package-mte", "homepage":
 
 
 def track(message):
-    action = Message(message)
-    action.update()
+    action = Message(message.body)
+    action.track()
 
 
 api.consume(track)

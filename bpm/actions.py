@@ -1,42 +1,22 @@
 # RPM Spec editing
 
+import os
 import subprocess
 import re
 
-from .config import all_configs, load_configs
+from .config import PackageList, Package
+from .log import get_logger
+from .git import Git
 
-REGEX = r'Version:(\s+)([\.\d]+)\n'
-
-
-def rpm_setver(file, version):
-    with open(file, 'r') as f:
-        text = f.read()
-        found = re.findall(REGEX, text)
-        try:
-            assert found
-            curver = found[0][1]
-            if version == curver:
-                return
-            else:
-                print(f"{curver} -> {version}")
-        except IndexError or AssertionError:
-            print("Failed to parse spec file!")
-            return
-        newspec = re.sub(REGEX, f'Version:{found[0][0]}{version}\n', text, 1)
-    with open(file, 'w') as f:
-        f.write(newspec)
+logger = get_logger(__name__)
 
 
-rpm_setver("newpackage.spec", "0.0.1")
-
-
-def shell(cmd):
-    return subprocess.run(cmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
 class Message:
     def __init__(self, message):
-        self.fullmsg = message.body
+        # get type of message
+        self.fullmsg = message
         self.message = self.fullmsg["message"]
         self.project = self.fullmsg["project"]
 
@@ -46,6 +26,26 @@ class Message:
         print(data["message"]["project"]["version"])
 
     def update(self):
-        data = self.fullmsg
-        print(data)
-        print(self.project["name"])
+        cwd = os.getcwd()
+        if not PackageList().get(self.project["name"]):
+            logger.info(f"{self.project['name']} not found in package list")
+            return
+        pkg: Package = PackageList().get(self.project["name"])
+
+        version = self.project["version"]
+        logger.info(f"Updating {self.project['name']} to {version}")
+        repo = Git(pkg.repourl)
+        os.chdir(self.project['name'])
+        # update the version
+        match pkg.build.method:
+            case 'rpm':
+                pkg.build.update(version)
+            case 'shell':
+                # get the command
+                cmd = pkg.build.script
+                pkg.build.update(cmd)
+
+        os.chdir(cwd)
+
+if __name__ == '__main__':
+    pass
