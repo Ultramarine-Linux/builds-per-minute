@@ -2,16 +2,16 @@ import pytest
 from typing import TypeVar
 
 
-_Config = TypeVar('_Config')
+_Config = TypeVar("_Config")
 
 
-pytest_plugins = ('pytest_asyncio',)
+pytest_plugins = ("pytest_asyncio",)
 
 
 @pytest.fixture
 def config() -> _Config:
-    return{
-        "distro": 'custom_distro',
+    return {
+        "distro": "custom_distro",
         "message": {
             "agent": "anitya",
             "ecosystem": "pypi",
@@ -29,11 +29,11 @@ def config() -> _Config:
                 "updated_on": 1654171985.0,
                 "version": "1.2.1",
                 "version_url": None,
-                "versions": []
+                "versions": [],
             },
             "stable_versions": [],
             "upstream_versions": [],
-            "versions": []
+            "versions": [],
         },
         "project": {
             "backend": "PyPI",
@@ -47,16 +47,16 @@ def config() -> _Config:
             "updated_on": 1654171985.0,
             "version": "1.2.1",
             "version_url": None,
-            "versions": []
+            "versions": [],
         },
         "headers": {
             "fedora_messaging_schema": "anitya.project.version.update.v2",
             "fedora_messaging_severity": 20,
-            "sent-at": "2022-06-02T12:13:05+00:00"
+            "sent-at": "2022-06-02T12:13:05+00:00",
         },
         "id": "2805e912-d9d5-40f8-a897-cfff03044492",
         "queue": None,
-        "topic": "org.release-monitoring.prod.anitya.project.version.update.v2"
+        "topic": "org.release-monitoring.prod.anitya.project.version.update.v2",
     }
 
 
@@ -68,8 +68,5 @@ def global_config():
         "github_token": "",
         "git_token": "",
         "git_email": "test@example.com",
-        "git_dir": "git/"
+        "git_dir": "git/",
     }
-
-
-

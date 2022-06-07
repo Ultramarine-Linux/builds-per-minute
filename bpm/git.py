@@ -17,23 +17,27 @@ MESSAGE = "Builds Per Minute:"
 
 
 creds = pygit2.UserPass(USERNAME, TOKEN)
-callbacks=pygit2.RemoteCallbacks(credentials=creds)
+callbacks = pygit2.RemoteCallbacks(credentials=creds)
+
 
 class Git:
     repo: pygit2.Repository
-    def __init__(self,url, project_name):
+
+    def __init__(self, url, project_name):
         # get the repo name from the url
         self.repo_name = url.split("/")[-1]
         # clone the repository
         self.repo_joined = os.path.join(GIT_DIR, project_name)
 
         try:
-            self.repo = pygit2.clone_repository(url, self.repo_joined,callbacks=callbacks)
+            self.repo = pygit2.clone_repository(
+                url, self.repo_joined, callbacks=callbacks
+            )
         except ValueError:
             print("Repository already exists")
             self.repo = pygit2.Repository(self.repo_joined)
 
-        #self.repo = pygit2.Repository(self.repo_name)
+        # self.repo = pygit2.Repository(self.repo_name)
         self.remote = self.repo.remotes[0]
 
     def __enter__(self):
@@ -67,12 +71,19 @@ class Git:
         self.repo.index.write()
         tree = self.repo.index.write_tree()
         committer = author = pygit2.Signature(USERNAME, EMAIL)
-        self.repo.create_commit(local_ref, author, committer, f"{MESSAGE} {message}", tree, [self.repo.references[local_ref].target])
+        self.repo.create_commit(
+            local_ref,
+            author,
+            committer,
+            f"{MESSAGE} {message}",
+            tree,
+            [self.repo.references[local_ref].target],
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with Git("https://github.com/Ultramarine-Linux/pkg-umpkg", "umpkg") as repo:
         repo.commit("um36", "test")
 
-    #repo.commit("um36", "Test")
-    #repo.push("refs/heads/main")
+        # repo.commit("um36", "Test")
+        repo.push("refs/heads/um36")

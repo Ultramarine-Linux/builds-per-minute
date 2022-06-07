@@ -6,10 +6,13 @@ from .log import get_logger
 from .commands import rpm_setver, shell
 import functools
 
+# check env for config location
+config_path = os.environ.get("BPM_CONFIG_PATH", "bpm.toml")
+
 
 @functools.cache
 def get_global_config():
-    return toml.load("bpm.toml")['bpm-config']
+    return toml.load(config_path)["bpm-config"]
 
 
 # Configuration module
@@ -20,10 +23,10 @@ global_config = get_global_config()
 class BuildSettings:
     @staticmethod
     def load_settings(cfg: dict[str, Any]):
-        method: str = cfg.get('build', {}).get("method", '')
+        method: str = cfg.get("build", {}).get("method", "")
         if not method:
             raise Exception("Invaid build method")
-        match cfg.get("build", {}).get("method", ''):
+        match cfg.get("build", {}).get("method", ""):
             case "rpm":
                 settings = RPMBuildSettings(cfg["build"])
             case "shell":
@@ -65,7 +68,8 @@ class ShellBuildSettings(BuildSettings):
         self.script = cfg["script"]
 
     def update(self, cmd: str, ver: str):
-        return shell(cmd.replace('{ver}', ver).replace('%ver%', ver))
+        return shell(cmd.replace("{ver}", ver).replace("%ver%", ver))
+
 
 class Package:
     upstream_name: str
@@ -82,12 +86,12 @@ class Package:
         self.build = BuildSettings.load_settings(data)
         self.repourl = data["repo"]
         self.branches = data.get("branches", [])
-        #logger.debug(f"{self.build=}")
+        # logger.debug(f"{self.build=}")
 
 
 class Singleton(object):
     def __new__(cls):
-        if not hasattr(cls, 'instance'):
+        if not hasattr(cls, "instance"):
             cls.instance = super(Singleton, cls).__new__(cls)
         return cls.instance
 
@@ -104,8 +108,7 @@ class PackageList(Singleton, dict):
                 self[pack.upstream_name] = pack
 
     def get_downstream(self, downstream_name):
-        pkgs = [pkg for pkg in self.values() if pkg.downstream_name ==
-                downstream_name]
+        pkgs = [pkg for pkg in self.values() if pkg.downstream_name == downstream_name]
         match len(pkgs):
             case 1:
                 return pkgs[0]
@@ -115,7 +118,7 @@ class PackageList(Singleton, dict):
                 return None  # warn
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     Package("config/umpkg.yaml")
 
     pkglist = PackageList()

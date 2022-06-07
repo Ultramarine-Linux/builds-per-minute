@@ -35,34 +35,28 @@ class Message:
 
         version = self.project["version"]
         logger.info(f"Updating {self.project['name']} to {version}")
-        with Git(pkg.repourl, project_name=pkg.upstream_name) as repo:
-            os.chdir(os.path.join(
-                global_config["git_dir"], self.project['name']))
-            # update the version
-            match pkg.build.method:
-                case 'rpm':
-                    pkg.build.update(version)
-                case 'shell':
-                    # get the command
-                    cmd = pkg.build.script
-                    pkg.build.update(cmd)
 
-            # if pkg.branches is empty
-            if not pkg.branches:
-                repo.commit(message=f"Update {pkg.upstream_name} to {version}")
-            else:
-                for branch in pkg.branches:
-                    repo.commit(
-                        branch, f"Update {pkg.upstream_name} to {version}")
+        for branch in pkg.branches:
+            with Git(pkg.repourl, project_name=pkg.upstream_name) as repo:
+                os.chdir(os.path.join(global_config["git_dir"], self.project["name"]))
+                # update the version
+                match pkg.build.method:
+                    case "rpm":
+                        pkg.build.update(version)
+                    case "shell":
+                        # get the command
+                        cmd = pkg.build.script
+                        pkg.build.update(cmd)
+                # if pkg.branches is empty
+                repo.commit(branch, f"Update {pkg.upstream_name} to {version}")
 
-            if global_config["push_to_remote"]:
-                for branch in pkg.branches:
+                if global_config["push_to_remote"]:
                     repo.push(f"refs/heads/{branch}")
-            else:
-                logger.info("Config says not to push to remote, skipping")
+                else:
+                    logger.info("Config says not to push to remote, skipping")
 
-            os.chdir(cwd)
+                os.chdir(cwd)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass
