@@ -18,10 +18,6 @@ GIT_DIR = global_config["git_dir"]
 MESSAGE = "Builds Per Minute:"
 
 
-creds = pygit2.UserPass(USERNAME, TOKEN)
-callbacks = pygit2.RemoteCallbacks(credentials=creds)
-
-
 class Git:
     repo: pygit2.Repository
 
@@ -29,6 +25,12 @@ class Git:
         # get the repo name from the url        # clone the repository
         self.cwd = os.getcwd()
         self.repo_joined = os.path.join(os.path.abspath(GIT_DIR), project_name)
+        if global_config["github_private_key"]:
+            gittoken = get_github_token()
+        else:
+            gittoken = TOKEN
+        creds = pygit2.UserPass(USERNAME, gittoken)
+        callbacks = pygit2.RemoteCallbacks(credentials=creds)
 
         try:
             self.repo = pygit2.clone_repository(
@@ -53,7 +55,11 @@ class Git:
     def push(self, ref: str):
         # Set TOKEN to a new token
         if global_config["github_private_key"]:
-            get_github_token()
+            gittoken = get_github_token()
+        else:
+            gittoken = TOKEN
+        creds = pygit2.UserPass(USERNAME, gittoken)
+        callbacks = pygit2.RemoteCallbacks(credentials=creds)
         self.remote.push(specs=[f"{ref}:{ref}"], callbacks=callbacks)
 
     def commit(self, branch: str = None, message: str = None):
