@@ -25,10 +25,9 @@ class Git:
     repo: pygit2.Repository
 
     def __init__(self, url, project_name):
-        # get the repo name from the url
-        self.repo_name = url.split("/")[-1]
-        # clone the repository
-        self.repo_joined = os.path.join(GIT_DIR, project_name)
+        # get the repo name from the url        # clone the repository
+        self.cwd = os.getcwd()
+        self.repo_joined = os.path.join(os.path.abspath(GIT_DIR), project_name)
 
         try:
             self.repo = pygit2.clone_repository(
@@ -40,6 +39,7 @@ class Git:
 
         # self.repo = pygit2.Repository(self.repo_name)
         self.remote = self.repo.remotes[0]
+        os.chdir(self.repo_joined)
 
     def __enter__(self):
         return self
@@ -47,6 +47,7 @@ class Git:
     def __exit__(self, exc_type, exc_value, traceback):
         # delete the folder recursively
         shutil.rmtree(os.path.abspath(os.getcwd()))
+        os.chdir(self.cwd)
 
     def push(self, ref: str):
         # Set TOKEN to a new token
