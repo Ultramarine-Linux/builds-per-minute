@@ -9,6 +9,16 @@ import functools
 # check env for config location
 config_path = os.environ.get("BPM_CONFIG_PATH", "bpm.toml")
 
+# function to update global config
+
+
+def update_config(config: dict):
+    # write config to file as toml
+    with open(config_path, "w") as f:
+        toml.dump({
+            "bpm-config": config
+        }, f)
+
 
 @functools.cache
 def get_global_config():
@@ -108,7 +118,8 @@ class PackageList(Singleton, dict):
                 self[pack.upstream_name] = pack
 
     def get_downstream(self, downstream_name):
-        pkgs = [pkg for pkg in self.values() if pkg.downstream_name == downstream_name]
+        pkgs = [pkg for pkg in self.values() if pkg.downstream_name ==
+                downstream_name]
         match len(pkgs):
             case 1:
                 return pkgs[0]

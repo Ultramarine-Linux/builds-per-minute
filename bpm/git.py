@@ -7,6 +7,7 @@ import github as gh
 
 from github import Github
 
+from bpm.github import get_github_token
 g = Github(global_config["git_token"])
 
 USERNAME = global_config["git_username"]
@@ -48,6 +49,9 @@ class Git:
         shutil.rmtree(self.repo_joined)
 
     def push(self, ref: str):
+        # Set TOKEN to a new token
+        if global_config["github_private_key"]:
+            get_github_token()
         self.remote.push(specs=[f"{ref}:{ref}"], callbacks=callbacks)
 
     def commit(self, branch: str = None, message: str = None):
