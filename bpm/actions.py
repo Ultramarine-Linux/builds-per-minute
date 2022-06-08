@@ -55,7 +55,7 @@ class Message:
                 else:
                     logger.info("Config says not to push to remote, skipping")
 
-                os.chdir(cwd)
+                #os.chdir(cwd)
 
 
 if __name__ == "__main__":

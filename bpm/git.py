@@ -46,7 +46,7 @@ class Git:
 
     def __exit__(self, exc_type, exc_value, traceback):
         # delete the folder recursively
-        shutil.rmtree(self.repo_joined)
+        shutil.rmtree(os.path.abspath(os.getcwd()))
 
     def push(self, ref: str):
         # Set TOKEN to a new token

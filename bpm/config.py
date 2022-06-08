@@ -7,7 +7,7 @@ from .commands import rpm_setver, shell
 import functools
 
 # check env for config location
-config_path = os.environ.get("BPM_CONFIG_PATH", "bpm.toml")
+config_path = os.environ.get("BPM_CONFIG_PATH", os.path.abspath("bpm.toml"))
 
 # function to update global config
 
@@ -20,7 +20,7 @@ def update_config(config: dict):
         }, f)
 
 
-@functools.cache
+#@functools.cache
 def get_global_config():
     return toml.load(config_path)["bpm-config"]
 
