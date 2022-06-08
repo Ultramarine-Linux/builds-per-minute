@@ -38,7 +38,7 @@ class Message:
 
         for branch in pkg.branches:
             with Git(pkg.repourl, project_name=pkg.upstream_name) as repo:
-                os.chdir(os.path.join(global_config["git_dir"], self.project["name"]))
+                #os.chdir(os.path.join(global_config["git_dir"], self.project["name"]))
                 # update the version
                 match pkg.build.method:
                     case "rpm":
@@ -55,7 +55,7 @@ class Message:
                 else:
                     logger.info("Config says not to push to remote, skipping")
 
-                os.chdir(cwd)
+                #os.chdir(cwd)
 
 
 if __name__ == "__main__":

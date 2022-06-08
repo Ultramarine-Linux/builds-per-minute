@@ -1,4 +1,5 @@
 import os
+import subprocess
 import pygit2
 import github
 from bpm.config import global_config
@@ -60,18 +61,20 @@ class Git:
         for reference in refer:
             print(reference)
         if not branch:
-            branch = self.repo.branches.get(self.repo.head.shorthand).branch_name
+            branch = self.repo.branches.get(
+                self.repo.head.shorthand).branch_name
         # check if branch exists
         if not self.repo.branches.get(branch):
             Exception("Branch does not exist")
         # get the ref for the branch
         remote_ref = f"refs/remotes/origin/{branch}"
         local_ref = f"refs/heads/{branch}"
-        if not self.repo.branches.get(branch):
-            self.repo.create_branch(branch, self.repo.head.peel())
-        # set
-        # checkout the branch
-        self.repo.checkout(local_ref)
+
+        # fuck this, system call to git
+        # very inconsistent code, but we need to do this because pygit2 is wonky as fuck
+        subprocess.run(["git", "checkout", branch])
+        subprocess.run(["git", "pull"])
+
         self.repo.index.add_all()
         self.repo.index.write()
         tree = self.repo.index.write_tree()
