@@ -9,3 +9,4 @@ tox
 pytest
 pytest-asyncio
 anitya-schema
+jwt
